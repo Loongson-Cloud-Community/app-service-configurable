@@ -15,7 +15,7 @@
 #
 
 #build stage
-ARG BASE=golang:1.18-alpine3.16
+ARG BASE=cr.loongnix.cn/library/golang:1.19-alpine
 FROM ${BASE} AS builder
 
 ARG ALPINE_PKG_BASE="make git"
@@ -26,15 +26,16 @@ ARG ADD_BUILD_TAGS=""
 RUN apk add --update --no-cache ${ALPINE_PKG_BASE} ${ALPINE_PKG_EXTRA}
 WORKDIR /app
 
+ENV GO111MODULE=auto GOPROXY=https://goproxy.cn
 COPY go.mod vendor* ./
-RUN [ ! -d "vendor" ] && go mod download all || echo "skipping..."
 
 COPY . .
+RUN go mod tidy
 ARG MAKE="make -e ADD_BUILD_TAGS=$ADD_BUILD_TAGS build"
 RUN $MAKE
 
 #final stage
-FROM alpine:3.16
+FROM cr.loongnix.cn/library/alpine:3.11
 LABEL license='SPDX-License-Identifier: Apache-2.0' \
   copyright='Copyright (c) 2023: Intel'
 LABEL Name=app-service-configurable Version=${VERSION}

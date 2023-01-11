@@ -2,7 +2,7 @@
 
 # VERSION file is not needed for local development, In the CI/CD pipeline, a temporary VERSION file is written
 # if you need a specific version, just override below
-APPVERSION=$(shell cat ./VERSION 2>/dev/null || echo 0.0.0)
+APPVERSION=3.0.0
 
 # This pulls the version of the SDK from the go.mod file. If the SDK is the only required module,
 # it must first remove the word 'required' so the offset of $2 is the same if there are multiple required modules
@@ -37,6 +37,7 @@ docker:
 		--label "git_sha=$(GIT_SHA)" \
 		-t edgexfoundry/app-service-configurable:$(GIT_SHA) \
 		-t edgexfoundry/app-service-configurable:${APPVERSION}-dev \
+		-t cr.loongnix.cn/edgexfoundry/app-service-configurable:${APPVERSION} \
 		.
 
 docker-nats:
